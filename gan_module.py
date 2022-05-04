@@ -13,7 +13,7 @@ from models import Generator, Discriminator
 
 class AgingGAN(pl.LightningModule):
 
-    def __init__(self, hparams):
+    def __init__(self, hparams):   # initializing the method and hparams is a thoughtful approach to configuration management
         super(AgingGAN, self).__init__()
         self.hparams = hparams
         self.genA2B = Generator(hparams['ngf'], n_residual_blocks=hparams['n_blocks'])
@@ -118,6 +118,8 @@ class AgingGAN(pl.LightningModule):
             }
             return output
 
+        
+    #Defining optimizers and LLR schedulers
     def configure_optimizers(self):
         g_optim = torch.optim.Adam(itertools.chain(self.genA2B.parameters(), self.genB2A.parameters()),
                                    lr=self.hparams['lr'], betas=(0.5, 0.999),
@@ -128,7 +130,8 @@ class AgingGAN(pl.LightningModule):
                                    betas=(0.5, 0.999),
                                    weight_decay=self.hparams['weight_decay'])
         return [g_optim, d_optim], []
-
+       
+     #defining  Datamodule
     def train_dataloader(self):
         train_transform = transforms.Compose([
             transforms.RandomHorizontalFlip(),
